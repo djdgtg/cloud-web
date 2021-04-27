@@ -1,43 +1,29 @@
 <template>
-  <div>
-    <el-form
-        ref="primaryForm"
-        inline
-        :model="loginForm"
-        style="text-align: center"
-        label-width="70px"
-    >
-      <el-row>
-        <el-form-item label="用户名">
-          <el-input
-              v-model="loginForm.username"
-              class="input_width_lg"
-              placeholder="请输入用户名"
-          />
-        </el-form-item>
-      </el-row>
-      <el-row>
-        <el-form-item label="密码">
-          <el-input
-              v-model="loginForm.password"
-              class="input_width_lg"
-              placeholder="请输入密码"
-          />
-        </el-form-item>
-      </el-row>
-      <el-row>
-        <el-form-item class="d-block">
-          <el-button
-              size="small"
-              type="primary"
-              @click="login"
-          >LOGIN
-          </el-button
-          >
-        </el-form-item>
-      </el-row>
-    </el-form>
-  </div>
+  <el-form :model="loginForm" :rules="rules"
+           status-icon
+           ref="loginForm"
+           label-position="left"
+           label-width="0px"
+           class="login-page">
+    <h3 style="text-align: center">系统登录</h3>
+    <el-form-item prop="username">
+      <el-input type="text"
+                v-model="loginForm.username"
+                auto-complete="off"
+                placeholder="用户名"
+      ></el-input>
+    </el-form-item>
+    <el-form-item prop="password">
+      <el-input type="password"
+                v-model="loginForm.password"
+                auto-complete="off"
+                placeholder="密码"
+      ></el-input>
+    </el-form-item>
+    <el-form-item style="text-align: center">
+      <el-button type="primary"  @click="login">登录</el-button>
+    </el-form-item>
+  </el-form>
 </template>
 
 
@@ -55,6 +41,10 @@ export default {
         username: "",
         password: "",
       },
+      rules: {
+        username: [{required: true, message: 'please enter your account', trigger: 'blur'}],
+        password: [{required: true, message: 'enter your password', trigger: 'blur'}]
+      },
       path: "",
     }
   },
@@ -63,16 +53,38 @@ export default {
   computed: {},
   methods: {
     login: function () {
-      axios.post("auth/oauth/token", qs.stringify(this.loginForm)).then(function (response) {
-        if (response.data.access_token) {
-          localStorage.setItem('token', response.data.access_token)
-          let redirect =  (new RegExp('[?|&]redirect=' + '([^&;]+?)(&|#|;|$)').exec(window.location.href) || [""])[1];
-          this.$router.push({
-            path: decodeURIComponent(redirect === undefined? '%2F' :redirect.replace(/\+/g, '%20'))
-          })
+      this.$refs.loginForm.validate((valid) => {
+        if (valid) {
+          axios.post("auth/oauth/token", qs.stringify(this.loginForm)).then(response => {
+            if (response.data.access_token) {
+              localStorage.setItem('token', response.data.access_token)
+              let redirect = (new RegExp('[?|&]redirect=' + '([^&;]+?)(&|#|;|$)').exec(window.location.href) || [""])[1];
+              this.$router.push({
+                path: decodeURIComponent(redirect === undefined ? '%2F' : redirect.replace(/\+/g, '%20'))
+              })
+            }
+          });
+        } else {
+          console.log('login failed!');
+          return false;
         }
-      }.bind(this))
+      })
     },
   }
 }
 </script>
+
+<style scoped>
+
+.login-page {
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  margin: 180px auto;
+  width: 350px;
+  padding: 35px 35px 15px;
+  background: orange;
+  border: 1px solid red;
+  box-shadow: 0 0 25px grey;
+}
+
+</style>

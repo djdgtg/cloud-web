@@ -5,11 +5,11 @@ import Router from '../router'
 let path = '';
 
 axios.interceptors.request.use(function (config) {
-    if (localStorage.getItem("token")) {
+    path = axios.getUri(config)
+    // 跳转登陆页、登陆这两个接口不能加请求头，会返回401
+    if (localStorage.getItem("token") && path!=='page/login' && path!=='auth/oauth/token') {
         config.headers['Authorization'] = 'Bearer ' + localStorage.getItem("token")
     }
-    path = axios.getUri(config)
-    console.log(path.startsWith('page'))
     return config
 }, function (error) {
     Message.error({
@@ -24,16 +24,20 @@ axios.interceptors.response.use(function (response) {
 }, function (error) {
     let msg = error.message
     if (error.response.status === 401) {
-        msg = '未登陆，请先登陆'
+        msg = '未登陆，请先登陆。'
         Router.push('/login')
     }
     if (error.response.status === 403) {
-        msg = '权限不够';
+        msg = '权限不够。';
     }
-    if (path === 'auth/oauth/token' && error.response.status === 400){
-        msg = error.response.data.error_description
+    if (error.response.status === 400){
+        msg = '操作失败。'
+        if(path === 'auth/oauth/token'){
+            msg = error.response.data.error_description
+        }
     }
     Message.error({
+        duration: 1500,
         message: '响应错误：' + msg
     })
     return Promise.reject(error)
