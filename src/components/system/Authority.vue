@@ -172,6 +172,10 @@ export default {
       },
       statusList: [
         {
+          value: null,
+          label: "请选择",
+        },
+        {
           value: 0,
           label: "关闭",
         },

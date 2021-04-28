@@ -27,9 +27,9 @@
         >
           <el-option
               v-for="item in authorityList"
-              :key="item.value"
+              :key="item.id"
               :label="item.name"
-              :value="item.value"
+              :value="item.id"
           />
         </el-select>
       </el-form-item>
@@ -201,10 +201,14 @@ export default {
         id: "",
         roleName: "",
         name: "",
-        ids: "",
+        ids: null,
         superAdmin: null,
       },
       statusList: [
+        {
+          id: null,
+          label: "请选择",
+        },
         {
           id: 0,
           label: "否",

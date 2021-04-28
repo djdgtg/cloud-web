@@ -23,6 +23,7 @@
         <el-select
             v-model="page.query.status"
             placeholder="请选择"
+            clearable
         >
           <el-option
               v-for="item in statusList"
@@ -37,6 +38,7 @@
             v-model="page.query.ids"
             placeholder="请选择"
             multiple
+            clearable
         >
           <el-option
               v-for="item in roleList"
@@ -214,6 +216,10 @@ export default {
         status: "",
       },
       statusList: [
+        {
+          value: null,
+          label: "请选择",
+        },
         {
           value: 0,
           label: "关闭",

@@ -12,6 +12,20 @@
             placeholder="请输入资源名称"
         />
       </el-form-item>
+      <el-form-item label="资源类型">
+        <el-select
+            v-model="page.query.resourceType"
+            placeholder="请选择"
+            clearable
+        >
+          <el-option
+              v-for="item in typeList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="模块">
         <el-input
             v-model="page.query.module"
@@ -31,10 +45,18 @@
         />
       </el-form-item>
       <el-form-item label="访问权限">
-        <el-input
-            v-model="page.query.accessAuthorities"
-            placeholder="请输入访问权限"
-        />
+        <el-select
+            v-model="page.query.ids"
+            placeholder="请选择"
+            multiple
+        >
+          <el-option
+              v-for="item in authorityList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="开放访问">
         <el-select
@@ -85,6 +107,11 @@
       <el-table-column label="资源名称">
         <span slot-scope="scope" v-html="scope.row.resourceName"></span>
       </el-table-column>
+      <el-table-column
+          prop="resourceType"
+          label="资源类型"
+          :formatter="formatType"
+      ></el-table-column>
       <el-table-column label="模块">
         <span slot-scope="scope" v-html="scope.row.module"></span>
       </el-table-column>
@@ -95,7 +122,7 @@
         <span slot-scope="scope" v-html="scope.row.method"></span>
       </el-table-column>
       <el-table-column label="访问权限">
-        <span slot-scope="scope" v-html="scope.row.accessAuthorities"></span>
+        <span slot-scope="scope" v-html="scope.row.authorityNames"></span>
       </el-table-column>
       <el-table-column
           prop="permitAll"
@@ -146,6 +173,20 @@
           </el-form-item>
         </el-row>
         <el-row>
+          <el-form-item label="资源类型" prop="resourceType">
+            <el-select
+                v-model="saveForm.resourceType" style="width: 320px"
+            >
+              <el-option
+                  v-for="item in typeList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-row>
+        <el-row>
           <el-form-item label="模块" prop="module">
             <el-input v-model="saveForm.module" style="width: 320px"></el-input>
           </el-form-item>
@@ -161,8 +202,17 @@
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="访问权限" prop="accessAuthorities">
-            <el-input v-model="saveForm.accessAuthorities" style="width: 320px"></el-input>
+          <el-form-item label="访问权限" prop="authorityNames">
+            <el-select
+                v-model="saveForm.ids" style="width: 320px" multiple
+            >
+              <el-option
+                  v-for="item in authorityList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-row>
         <el-row>
@@ -203,8 +253,9 @@ export default {
           module: "",
           method: "",
           resourceName: "",
-          accessAuthorities: "",
+          resourceType: null,
           permitAll: null,
+          ids: null,
         },
         current: 1,
         size: 10,
@@ -214,11 +265,15 @@ export default {
         url: "",
         module: "",
         method: "",
-        resourceName: "",
-        accessAuthorities: "",
         permitAll: null,
+        resourceType: null,
+        ids: null,
       },
       statusList: [
+        {
+          value: null,
+          label: "请选择",
+        },
         {
           value: 0,
           label: "否",
@@ -228,6 +283,21 @@ export default {
           label: "是",
         },
       ],
+      typeList: [
+        {
+          id: null,
+          name: "请选择",
+        },
+        {
+          id: 0,
+          name: "页面",
+        },
+        {
+          id: 1,
+          name: "操作",
+        },
+      ],
+      authorityList: [],
       tableData: [],
       total: 0,
       dialogVisible: false,
@@ -235,6 +305,7 @@ export default {
     }
   },
   created() {
+    this.getAuthorityList();
     this.search();
   },
   methods: {
@@ -248,6 +319,21 @@ export default {
           return "";
       }
     },
+    formatType(row) {
+      switch (row.resourceType) {
+        case 1:
+          return "操作";
+        case 0:
+          return "页面";
+        default:
+          return "";
+      }
+    },
+    getAuthorityList: function () {
+      axios.get("system/authority").then(response => {
+        this.authorityList = response.data;
+      })
+    },
     search: function () {
       axios.post("system/resource/page", this.page).then(response => {
         this.tableData = response.data.records;
@@ -257,6 +343,14 @@ export default {
     openSave(row) {
       if (row !== null) {
         this.saveForm = Object.assign({}, row);
+        let authorityIds = [];
+        if (row.authorityIds !== null && row.authorityIds !== undefined && row.authorityIds !== "") {
+          let arrString = row.authorityIds.split(',')
+          for (let arrInt in arrString) {
+            authorityIds.push(parseInt(arrString[arrInt]))
+          }
+          this.saveForm.ids = authorityIds;
+        }
       }
       this.dialogVisible = true
     },
