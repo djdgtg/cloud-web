@@ -82,7 +82,7 @@ export default {
   margin: 180px auto;
   width: 350px;
   padding: 35px 35px 15px;
-  background: orange;
+  background: green;
   border: 1px solid red;
   box-shadow: 0 0 25px grey;
 }

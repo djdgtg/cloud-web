@@ -18,20 +18,6 @@
             placeholder="请输入名称"
         />
       </el-form-item>
-      <el-form-item label="权限状态">
-        <el-select
-            v-model="page.query.status"
-            placeholder="请选择"
-            clearable
-        >
-          <el-option
-              v-for="item in statusList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item label="操作">
         <el-button
             size="small"
@@ -70,11 +56,6 @@
       <el-table-column label="名称">
         <span slot-scope="scope" v-html="scope.row.name"></span>
       </el-table-column>
-      <el-table-column
-          prop="status"
-          label="权限状态"
-          :formatter="formatStatus"
-      ></el-table-column>
       <el-table-column label="操作" width="200">
         <div slot-scope="scope">
           <el-button
@@ -123,20 +104,6 @@
             <el-input v-model="saveForm.name" style="width: 320px"></el-input>
           </el-form-item>
         </el-row>
-        <el-row>
-          <el-form-item label="状态" prop="status">
-            <el-select
-                v-model="saveForm.status" style="width: 320px"
-            >
-              <el-option
-                  v-for="item in statusList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="save">确 定</el-button>
@@ -159,7 +126,6 @@ export default {
         query: {
           authorityName: "",
           name: "",
-          status: null,
         },
         current: 1,
         size: 10,
@@ -168,22 +134,7 @@ export default {
         id: "",
         authorityName: "",
         name: "",
-        status: null,
       },
-      statusList: [
-        {
-          value: null,
-          label: "请选择",
-        },
-        {
-          value: 0,
-          label: "关闭",
-        },
-        {
-          value: 1,
-          label: "开启",
-        },
-      ],
       tableData: [],
       total: 0,
       dialogVisible: false,
@@ -194,16 +145,6 @@ export default {
     this.search();
   },
   methods: {
-    formatStatus(row) {
-      switch (row.status) {
-        case 1:
-          return "开启";
-        case 0:
-          return "关闭";
-        default:
-          return "";
-      }
-    },
     search: function () {
       axios.post("system/authority/page", this.page).then(response => {
         this.tableData = response.data.records;

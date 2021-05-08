@@ -33,20 +33,6 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="是否超管">
-        <el-select
-            v-model="page.query.superAdmin"
-            placeholder="请选择"
-            clearable
-        >
-          <el-option
-              v-for="item in statusList"
-              :key="item.id"
-              :label="item.label"
-              :value="item.id"
-          />
-        </el-select>
-      </el-form-item>
       <el-form-item label="操作">
         <el-button
             size="small"
@@ -88,11 +74,6 @@
       <el-table-column label="权限">
         <span slot-scope="scope" v-html="scope.row.authorityNames"></span>
       </el-table-column>
-      <el-table-column
-          prop="superAdmin"
-          label="是否超管"
-          :formatter="formatStatus"
-      ></el-table-column>
       <el-table-column label="操作" width="200">
         <div slot-scope="scope">
           <el-button
@@ -155,20 +136,6 @@
             </el-select>
           </el-form-item>
         </el-row>
-        <el-row>
-          <el-form-item label="是否超管" prop="superAdmin">
-            <el-select
-                v-model="saveForm.superAdmin" style="width: 320px"
-            >
-              <el-option
-                  v-for="item in statusList"
-                  :key="item.id"
-                  :label="item.label"
-                  :value="item.id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="save">确 定</el-button>
@@ -191,7 +158,6 @@ export default {
         query: {
           roleName: "",
           name: "",
-          superAdmin: null,
           ids: null,
         },
         current: 1,
@@ -230,16 +196,6 @@ export default {
     this.search();
   },
   methods: {
-    formatStatus(row) {
-      switch (row.superAdmin) {
-        case 1:
-          return "是";
-        case 0:
-          return "否";
-        default:
-          return "";
-      }
-    },
     getAuthorityList: function () {
       axios.get("system/authority").then(response => {
         this.authorityList = response.data;

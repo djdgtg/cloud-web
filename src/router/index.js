@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/login/Login'
 import Index from '@/components/index/Index'
-import Api from '@/components/index/Api'
+import Basic from '@/components/index/Basic'
 import Hello from '@/components/index/Hello'
 import User from '@/components/system/User'
 import Role from '@/components/system/Role'
@@ -24,9 +24,9 @@ export default new Router({
             component: Index,
             children: [
                 {
-                    path: '/api',
-                    name: 'Api',
-                    component: Api
+                    path: '/basic',
+                    name: 'Basic',
+                    component: Basic
                 },
                 {
                     path: '/hello',

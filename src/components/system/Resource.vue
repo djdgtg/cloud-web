@@ -12,14 +12,14 @@
             placeholder="请输入资源名称"
         />
       </el-form-item>
-      <el-form-item label="资源类型">
+      <el-form-item label="页面请求">
         <el-select
-            v-model="page.query.resourceType"
+            v-model="page.query.pageRequest"
             placeholder="请选择"
             clearable
         >
           <el-option
-              v-for="item in typeList"
+              v-for="item in statusList"
               :key="item.id"
               :label="item.name"
               :value="item.id"
@@ -108,9 +108,8 @@
         <span slot-scope="scope" v-html="scope.row.resourceName"></span>
       </el-table-column>
       <el-table-column
-          prop="resourceType"
-          label="资源类型"
-          :formatter="formatType"
+          label="页面请求"
+          :formatter="formatRequests"
       ></el-table-column>
       <el-table-column label="模块">
         <span slot-scope="scope" v-html="scope.row.module"></span>
@@ -125,7 +124,6 @@
         <span slot-scope="scope" v-html="scope.row.authorityNames"></span>
       </el-table-column>
       <el-table-column
-          prop="permitAll"
           label="开放访问"
           :formatter="formatStatus"
       ></el-table-column>
@@ -173,12 +171,12 @@
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="资源类型" prop="resourceType">
+          <el-form-item label="页面请求" prop="pageRequest">
             <el-select
-                v-model="saveForm.resourceType" style="width: 320px"
+                v-model="saveForm.pageRequest" style="width: 320px"
             >
               <el-option
-                  v-for="item in typeList"
+                  v-for="item in statusList"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -253,7 +251,7 @@ export default {
           module: "",
           method: "",
           resourceName: "",
-          resourceType: null,
+          pageRequest: null,
           permitAll: null,
           ids: null,
         },
@@ -266,7 +264,7 @@ export default {
         module: "",
         method: "",
         permitAll: null,
-        resourceType: null,
+        pageRequest: null,
         ids: null,
       },
       statusList: [
@@ -275,26 +273,12 @@ export default {
           label: "请选择",
         },
         {
-          value: 0,
+          value: false,
           label: "否",
         },
         {
-          value: 1,
+          value: true,
           label: "是",
-        },
-      ],
-      typeList: [
-        {
-          id: null,
-          name: "请选择",
-        },
-        {
-          id: 0,
-          name: "页面",
-        },
-        {
-          id: 1,
-          name: "操作",
         },
       ],
       authorityList: [],
@@ -311,20 +295,20 @@ export default {
   methods: {
     formatStatus(row) {
       switch (row.permitAll) {
-        case 1:
+        case true:
           return "是";
-        case 0:
+        case false:
           return "否";
         default:
           return "";
       }
     },
-    formatType(row) {
-      switch (row.resourceType) {
-        case 1:
-          return "操作";
-        case 0:
-          return "页面";
+    formatRequests(row) {
+      switch (row.pageRequest) {
+        case true:
+          return "是";
+        case false:
+          return "否";
         default:
           return "";
       }

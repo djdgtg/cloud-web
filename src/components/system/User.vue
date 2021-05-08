@@ -19,9 +19,9 @@
             placeholder="请输入真实姓名"
         />
       </el-form-item>
-      <el-form-item label="用户状态">
+      <el-form-item label="是否启用">
         <el-select
-            v-model="page.query.status"
+            v-model="page.query.enabled"
             placeholder="请选择"
             clearable
         >
@@ -65,12 +65,54 @@
         >
           新增
         </el-button>
+        <el-button
+            size="small"
+            type="danger"
+            icon="el-icon-delete"
+            @click="batchRemove"
+        >
+          删除
+        </el-button>
+        <el-button
+            size="small"
+            type="warning"
+            icon="el-icon-edit"
+            @click="enabled(true)"
+        >
+          开启
+        </el-button>
+        <el-button
+            size="small"
+            type="warning"
+            icon="el-icon-edit"
+            @click="enabled(false)"
+        >
+          关闭
+        </el-button>
+        <el-button
+            size="small"
+            type="primary"
+            icon="el-icon-upload"
+            @click="openImpDialog"
+        >
+          导入
+        </el-button>
+        <el-button
+            size="small"
+            type="primary"
+            icon="el-icon-download"
+            @click="exports"
+        >
+          导出
+        </el-button>
       </el-form-item>
     </el-form>
 
     <!-- 页面列表 -->
     <el-table
         :data="tableData"
+        style="width: 100%; text-align: center"
+        @selection-change="selectChange"
         border
     >
       <el-table-column type="selection" width="50"></el-table-column>
@@ -81,10 +123,10 @@
           sortable
       ></el-table-column>
       <el-table-column label="用户名称">
-        <span slot-scope="scope" v-html="scope.row.name"></span>
+        <span slot-scope="scope" v-html="scope.row.username"></span>
       </el-table-column>
       <el-table-column label="真实姓名">
-        <span slot-scope="scope" v-html="scope.row.username"></span>
+        <span slot-scope="scope" v-html="scope.row.name"></span>
       </el-table-column>
       <el-table-column label="用户密码">
         <span slot-scope="scope" v-html="scope.row.password"></span>
@@ -93,8 +135,8 @@
         <span slot-scope="scope" v-html="scope.row.roleNames"></span>
       </el-table-column>
       <el-table-column
-          prop="status"
-          label="状态"
+          prop="enabled"
+          label="是否已启用"
           :formatter="formatStatus"
       ></el-table-column>
       <el-table-column label="操作" width="200">
@@ -166,15 +208,15 @@
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="状态" prop="status">
+          <el-form-item label="是否启用" prop="enabled">
             <el-select
-                v-model="saveForm.status" style="width: 320px"
+                v-model="saveForm.enabled" style="width: 320px"
             >
               <el-option
                   v-for="item in statusList"
-                  :key="item.id"
+                  :key="item.value"
                   :label="item.label"
-                  :value="item.id"
+                  :value="item.value"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -185,6 +227,49 @@
         <el-button @click="dialogVisible = false">取 消</el-button>
       </span>
     </el-dialog>
+
+    <!-- 导入弹窗 -->
+    <el-dialog title="导入窗口" width="520px" :visible.sync="impDialog">
+      <el-form>
+        <el-row>
+          <el-form-item style="text-align: center">
+            <el-upload
+                ref="upload"
+                action="system/user/import"
+                accept=".xlsx,.xls"
+                :headers="addHeader"
+                :on-error="onError"
+                :on-success="onSuccess"
+                :auto-upload="false"
+                :multiple="false"
+            >
+              <el-button
+                  slot="trigger"
+                  size="small"
+                  type="primary"
+                  icon="el-icon-search"
+              >选择文件</el-button
+              >&nbsp;
+              <el-button
+                  size="small"
+                  type="primary"
+                  icon="el-icon-check"
+                  @click="submitUpload"
+              >确认上传</el-button
+              >
+              <el-button
+                  size="small"
+                  type="primary"
+                  icon="el-icon-check"
+                  @click="template"
+              >下载模板</el-button
+              >
+            </el-upload>
+          </el-form-item>
+        </el-row>
+      </el-form>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -202,7 +287,7 @@ export default {
           username: "",
           name: "",
           ids: null,
-          status: null,
+          enabled: null,
         },
         current: 1,
         size: 10,
@@ -213,7 +298,7 @@ export default {
         name: "",
         password: "",
         ids: "",
-        status: "",
+        enabled: null,
       },
       statusList: [
         {
@@ -221,16 +306,21 @@ export default {
           label: "请选择",
         },
         {
-          value: 0,
-          label: "关闭",
+          value: true,
+          label: "是",
         },
         {
-          value: 1,
-          label: "开启",
+          value: false,
+          label: "否",
         },
       ],
       roleList: [],
+      selectedIds: [],
       tableData: [],
+      impDialog: false,
+      addHeader: {
+        Authorization: 'Bearer ' + localStorage.getItem("token")
+      },
       total: 0,
       dialogVisible: false,
       path: "",
@@ -241,12 +331,18 @@ export default {
     this.search();
   },
   methods: {
+    selectChange(row) {
+      this.selectedIds = [];
+      row.forEach((element) => {
+        this.selectedIds.push(element.id);
+      });
+    },
     formatStatus(row) {
-      switch (row.status) {
-        case 1:
-          return "开启";
-        case 0:
-          return "关闭";
+      switch (row.enabled) {
+        case true:
+          return "是";
+        case false:
+          return "否";
         default:
           return "";
       }
@@ -261,6 +357,41 @@ export default {
         this.tableData = response.data.records;
         this.total = response.data.total;
       })
+    },
+    exports: function () {
+      // 响应类型：arraybuffer, blob
+      axios.post("system/user/export", this.page.query, {responseType: 'blob'}).then(resp => {
+        let headers = resp.headers;
+        let contentType = headers['content-type'];
+        if (!resp.data) {
+          return false;
+        } else {
+          const blob = new Blob([resp.data], {type: contentType});
+          const contentDisposition = resp.headers['content-disposition'];
+          let fileName = 'unknown';
+          if (contentDisposition) {
+            fileName = window.decodeURI(resp.headers['content-disposition'].split('=')[1]);
+          }
+          this.downFile(blob, fileName);
+        }
+      });
+    },
+    /* 下载方法 */
+    downFile(blob, fileName) {
+      // 非IE下载
+      if ('download' in document.createElement('a')) {
+        let link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob); // 创建下载的链接
+        link.download = fileName; // 下载后文件名
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click(); // 点击下载
+        window.URL.revokeObjectURL(link.href); // 释放掉blob对象
+        document.body.removeChild(link); // 下载完成移除元素
+      } else {
+        // IE10+下载
+        window.navigator.msSaveBlob(blob, fileName);
+      }
     },
     openSave(row) {
       if (row !== null && row !== undefined) {
@@ -293,6 +424,51 @@ export default {
         })
         this.search();
       })
+    },
+    batchRemove: function () {
+      let ids = "";
+      this.selectedIds.forEach((id, index) => {
+        if(index === this.selectedIds.length - 1){
+          ids += id;
+        } else {
+          ids += id+",";
+        }
+      });
+      this.remove(ids);
+    },
+    enabled(enabled) {
+      axios.post("system/user/enabled/"+enabled ,this.selectedIds).then(() => {
+        Message.success({
+          message: '切换成功。'
+        })
+        this.search();
+      })
+    },
+    openImpDialog(){
+      this.impDialog=true
+    },
+    //确定上传
+    submitUpload() {
+      this.$refs.upload.submit();
+    },
+    onError() {
+      Message.error({
+        duration: 1500,
+        message: '导入失败。'
+      })
+    },
+    onSuccess() {
+      Message.success({
+        duration: 1500,
+        message: '导入成功。'
+      })
+      this.impDialog=false
+      this.$refs.upload.clearFiles();
+      this.search();
+    },
+    //下载模板
+    template() {
+      window.open("system/user/template", "_blank")
     },
     handleCurrentChange(val) {
       this.page.current = val;

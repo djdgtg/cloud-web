@@ -1,13 +1,19 @@
 <template>
   <el-container>
     <el-header>
-      spring-cloud-oauth2 web
-      <el-button
-          size="small"
-          icon="el-icon-d-arrow-left"
-          @click="logout()"
-      >退出
-      </el-button>
+      <el-row>
+        <el-col :span="20" style="text-align: left">
+          spring-cloud-oauth2 web
+        </el-col>
+        <el-col :span="4" style="text-align: right">
+          <el-button
+              size="small"
+              icon="el-icon-d-arrow-left"
+              @click="logout()"
+          >退出
+          </el-button>
+        </el-col>
+      </el-row>
     </el-header>
     <el-container>
       <el-aside width="200px">
@@ -50,9 +56,9 @@
                 <i class="el-icon-document"></i>
                 <span slot="title">Hello</span>
               </el-menu-item>
-              <el-menu-item index="/api">
+              <el-menu-item index="/basic">
                 <i class="el-icon-document"></i>
-                <span slot="title">Api</span>
+                <span slot="title">Basic</span>
               </el-menu-item>
             </el-menu-item-group>
           </el-submenu>

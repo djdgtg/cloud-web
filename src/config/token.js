@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Message } from 'element-ui'
+import {Message} from 'element-ui'
 import Router from '../router'
 
 let path = '';
@@ -7,7 +7,7 @@ let path = '';
 axios.interceptors.request.use(function (config) {
     path = axios.getUri(config)
     // 跳转登陆页、登陆这两个接口不能加请求头，会返回401
-    if (localStorage.getItem("token") && path!=='page/login' && path!=='auth/oauth/token') {
+    if (localStorage.getItem("token") && path !== 'page/login' && path !== 'auth/oauth/token') {
         config.headers['Authorization'] = 'Bearer ' + localStorage.getItem("token")
     }
     return config
@@ -30,9 +30,9 @@ axios.interceptors.response.use(function (response) {
     if (error.response.status === 403) {
         msg = '权限不够。';
     }
-    if (error.response.status === 400){
+    if (error.response.status === 400) {
         msg = '操作失败。'
-        if(path === 'auth/oauth/token'){
+        if (path === 'auth/oauth/token') {
             msg = error.response.data.error_description
         }
     }

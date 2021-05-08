@@ -41,7 +41,7 @@ import axios from "axios";
 export default {
   methods: {
     api: function (api) {
-      axios.get("api/"+api).then(function (response) {
+      axios.get("basic/"+api).then(function (response) {
         Message.success({
           message: '响应成功：' + response.data
         })
