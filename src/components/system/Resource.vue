@@ -12,26 +12,6 @@
             placeholder="请输入资源名称"
         />
       </el-form-item>
-      <el-form-item label="页面请求">
-        <el-select
-            v-model="page.query.pageRequest"
-            placeholder="请选择"
-            clearable
-        >
-          <el-option
-              v-for="item in statusList"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="模块">
-        <el-input
-            v-model="page.query.module"
-            placeholder="请输入模块"
-        />
-      </el-form-item>
       <el-form-item label="Url">
         <el-input
             v-model="page.query.url"
@@ -107,13 +87,6 @@
       <el-table-column label="资源名称">
         <span slot-scope="scope" v-html="scope.row.resourceName"></span>
       </el-table-column>
-      <el-table-column
-          label="页面请求"
-          :formatter="formatRequests"
-      ></el-table-column>
-      <el-table-column label="模块">
-        <span slot-scope="scope" v-html="scope.row.module"></span>
-      </el-table-column>
       <el-table-column label="Url">
         <span slot-scope="scope" v-html="scope.row.url"></span>
       </el-table-column>
@@ -168,25 +141,6 @@
         <el-row>
           <el-form-item label="资源名称" prop="resourceName">
             <el-input v-model="saveForm.resourceName" style="width: 320px"></el-input>
-          </el-form-item>
-        </el-row>
-        <el-row>
-          <el-form-item label="页面请求" prop="pageRequest">
-            <el-select
-                v-model="saveForm.pageRequest" style="width: 320px"
-            >
-              <el-option
-                  v-for="item in statusList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-row>
-        <el-row>
-          <el-form-item label="模块" prop="module">
-            <el-input v-model="saveForm.module" style="width: 320px"></el-input>
           </el-form-item>
         </el-row>
         <el-row>
@@ -248,10 +202,8 @@ export default {
       page: {
         query: {
           url: "",
-          module: "",
           method: "",
           resourceName: "",
-          pageRequest: null,
           permitAll: null,
           ids: null,
         },
@@ -261,10 +213,8 @@ export default {
       saveForm: {
         id: "",
         url: "",
-        module: "",
         method: "",
         permitAll: null,
-        pageRequest: null,
         ids: null,
       },
       statusList: [
@@ -295,16 +245,6 @@ export default {
   methods: {
     formatStatus(row) {
       switch (row.permitAll) {
-        case true:
-          return "是";
-        case false:
-          return "否";
-        default:
-          return "";
-      }
-    },
-    formatRequests(row) {
-      switch (row.pageRequest) {
         case true:
           return "是";
         case false:

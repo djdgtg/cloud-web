@@ -9,3 +9,9 @@ export default {
   name: 'App'
 }
 </script>
+
+<style>
+.el-table th.gutter{
+  display: table-cell!important;
+}
+</style>
