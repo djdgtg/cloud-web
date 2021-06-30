@@ -32,9 +32,12 @@ axios.interceptors.response.use(function (response) {
     }
     if (error.response.status === 400) {
         msg = '操作失败。'
-        if (path === 'auth/oauth/token') {
+        if (path.indexOf("oauth/token") !== -1) {
             msg = error.response.data.error_description
         }
+    }
+    if (error.response.status === 500) {
+        msg = '服务异常。'
     }
     Message.error({
         duration: 1500,

@@ -8,14 +8,11 @@ import User from '@/components/system/User'
 import Role from '@/components/system/Role'
 import Authority from '@/components/system/Authority'
 import Resource from '@/components/system/Resource'
-import School from '@/components/examtool/School'
-import Exam from '@/components/examtool/Exam'
-import Student from '@/components/examtool/Student'
-import StudentStatistics from '@/components/examtool/StudentStatistics'
 
 Vue.use(Router)
 
 export default new Router({
+    mode: 'history',  //去掉url中的#
     routes: [
         {
             path: '/login',
@@ -27,26 +24,6 @@ export default new Router({
             name: 'Index',
             component: Index,
             children: [
-                {
-                    path: '/school',
-                    name: 'School',
-                    component: School
-                },
-                {
-                    path: '/exam',
-                    name: 'Exam',
-                    component: Exam
-                },
-                {
-                    path: '/student',
-                    name: 'Student',
-                    component: Student
-                },
-                {
-                    path: '/st-statistics',
-                    name: 'StudentStatistics',
-                    component: StudentStatistics
-                },
                 {
                     path: '/api',
                     name: 'Api',

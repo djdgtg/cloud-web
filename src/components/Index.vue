@@ -62,30 +62,6 @@
               </el-menu-item>
             </el-menu-item-group>
           </el-submenu>
-          <el-submenu index="3">
-            <template slot="title">
-              <i class="el-icon-menu"></i>
-              <span>考务页面</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="/school">
-                <i class="el-icon-document"></i>
-                <span slot="title">学校管理</span>
-              </el-menu-item>
-              <el-menu-item index="/exam">
-                <i class="el-icon-document"></i>
-                <span slot="title">考场管理</span>
-              </el-menu-item>
-              <el-menu-item index="/student">
-                <i class="el-icon-document"></i>
-                <span slot="title">考生管理</span>
-              </el-menu-item>
-              <el-menu-item index="/st-statistics">
-                <i class="el-icon-document"></i>
-                <span slot="title">考生统计</span>
-              </el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
         </el-menu>
       </el-aside>
       <el-main>

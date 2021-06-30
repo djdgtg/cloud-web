@@ -23,10 +23,23 @@ router.beforeEach((to, from, next) => {
     }).catch(function (error) {
         // 将跳转的路由path作为参数，登录成功后跳转到该路由
         if (error.response.status === 401) {
-            next({
-                path: '/login',
-                query: {redirect: to.fullPath}
-            });
+            let code = (new RegExp('[?|&]code=' + '([^&;]+?)(&|#|;|$)').exec(to.fullPath) || [""])[1];
+            if (code) {
+                next({
+                    path: '/login',
+                    query: {
+                        redirect: to.fullPath,
+                        code: code,
+                    }
+                });
+            } else {
+                next({
+                    path: '/login',
+                    query: {
+                        redirect: to.fullPath,
+                    }
+                });
+            }
         }
     });
 })
