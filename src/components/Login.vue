@@ -21,8 +21,8 @@
       ></el-input>
     </el-form-item>
     <el-form-item style="text-align: center">
-      <el-button type="primary"  @click="login">登录</el-button>
-      <el-button type="primary"  @click="thirdLogin">第三方登录</el-button>
+      <el-button type="primary" @click="login">登录</el-button>
+      <el-button type="primary" @click="thirdLogin">第三方登录</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -48,27 +48,6 @@ export default {
       },
     }
   },
-  beforeCreate() {
-    let code = this.$route.query.code;
-    if(code){
-      this.loginForm = {
-        grant_type: "authorization_code",
-        client_id: "client_3",
-        client_secret: "123456",
-        code: code,
-        redirect_uri: "http://localhost:8080",
-      }
-      axios.post("auth/oauth/token", qs.stringify(this.loginForm)).then(response => {
-        if (response.data.access_token) {
-          localStorage.setItem('token', response.data.access_token)
-          let redirect = (new RegExp('[?|&]redirect=' + '([^&;]+?)(&|#|;|$)').exec(window.location.href) || [""])[1];
-          this.$router.push({
-            path: decodeURIComponent(redirect === undefined ? '%2F' : redirect.replace(/\+/g, '%20'))
-          })
-        }
-      });
-    }
-  },
   methods: {
     login: function () {
       this.$refs.loginForm.validate((valid) => {
@@ -76,10 +55,8 @@ export default {
           axios.post("auth/oauth/token", qs.stringify(this.loginForm)).then(response => {
             if (response.data.access_token) {
               localStorage.setItem('token', response.data.access_token)
-              let redirect = (new RegExp('[?|&]redirect=' + '([^&;]+?)(&|#|;|$)').exec(window.location.href) || [""])[1];
-              this.$router.push({
-                path: decodeURIComponent(redirect === undefined ? '%2F' : redirect.replace(/\+/g, '%20'))
-              })
+              let redirect = this.$route.query.redirect === undefined ? "/" : this.$route.query.redirect;
+              this.$router.push(redirect)
             }
           });
         } else {

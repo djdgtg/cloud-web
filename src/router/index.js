@@ -11,6 +11,12 @@ import Resource from '@/components/system/Resource'
 
 Vue.use(Router)
 
+const originalPush = Router.prototype.push
+//修改原型对象中的push方法
+Router.prototype.push = function push(location) {
+    return originalPush.call(this, location).catch(err => err)
+}
+
 export default new Router({
     mode: 'history',  //去掉url中的#
     routes: [

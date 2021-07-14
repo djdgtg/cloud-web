@@ -18,8 +18,15 @@
             size="small"
             type="primary"
             icon="el-icon-search"
-            @click="api('test')"
-        >test</el-button
+            @click="api('system')"
+        >system</el-button
+        >
+        <el-button
+            size="small"
+            type="primary"
+            icon="el-icon-search"
+            @click="api('exam')"
+        >exam</el-button
         >
         <el-button
             size="small"
